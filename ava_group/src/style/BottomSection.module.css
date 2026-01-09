@@ -1,0 +1,101 @@
+/* Project Card Container */
+.projectCardContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start; /* Sola hizalanır */
+  gap: 2.5rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 2.5rem 0;
+  padding: 1.5rem;
+  border-radius: 12px;
+  transition: all 0.6s ease-in-out;
+  position: relative;
+  z-index: 1;
+}
+
+/* Seçili kart için geniş görünüm */
+.projectCardContainer.isSelected {
+  gap: 4rem;
+  max-width: 1400px;
+  padding: 2rem;
+  z-index: 10;
+  transform: scale(1.03);
+  background-color: transparent;
+}
+
+/* Görsel Wrapper */
+.imageWrapper {
+  flex-shrink: 0;
+  width: 400px;
+  height: 220px;
+  overflow: hidden;
+  border-radius: 12px;
+  transition: all 0.6s ease-in-out;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.projectCardContainer.isSelected .imageWrapper {
+  width: 720px;
+  height: 480px;
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Görsel içi */
+.imageWrapper img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Sol panel */
+.infoPanel {
+  flex: 1;
+  min-width: 280px;
+  max-width: 400px;
+  text-align: right;
+}
+
+.infoPanel h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  color: var(--foreground);
+}
+
+.infoPanel p {
+  font-size: 0.95rem;
+  color: var(--muted-foreground);
+  margin-bottom: 1rem;
+}
+
+/* Mobil (opsiyonel) */
+@media (max-width: 768px) {
+  .projectCardContainer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .imageWrapper,
+  .projectCardContainer.isSelected .imageWrapper {
+    width: 100%;
+    height: 200px;
+  }
+
+  .infoPanel {
+    text-align: left;
+  }
+}
+.scrollWrapper > * {
+  pointer-events: none;
+}
+
+/* Yeni - daha kontrollü */
+.scrollWrapper > *:not(.content-interactive) {
+  pointer-events: none;
+}

@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id              Int             @id @default(autoincrement())
+  src             String
+  alt             String
+  status          ProjectStatus
+  icon            String?
+  year            Int
+
+  // Çok dilli alanlar
+  leftTitle_en    String
+  leftTitle_tr    String
+  leftTitle_ar    String?
+
+  description_en  String
+  description_tr  String
+  description_ar  String?
+
+  location_en     String
+  location_tr     String
+  location_ar     String?
+
+  client_en       String
+  client_tr       String
+  client_ar       String?
+
+  typology_en     String
+  typology_tr     String
+  typology_ar     String?
+
+  // İlişkiler
+  details         ProjectDetail[]
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@map("projects")
+}
+
+model ProjectDetail {
+  id        Int     @id @default(autoincrement())
+  type      DetailType
+
+  // Dosya içerikleri için (image/video)
+  content String?
+
+  content_tr String?
+  content_en String?
+  content_ar String?
+
+  // Çok dilli başlıklar
+  title_en  String?
+  title_tr  String?
+  title_ar  String?
+
+  // İlişkiler
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId Int
+
+  // Sıralama için
+  order     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("project_details")
+}
+
+enum ProjectStatus {
+  COMPLETED
+  UNDER_CONSTRUCTION
+  IN_DESIGN
+}
+
+enum DetailType {
+  image
+  text
+  video
+  location  
+}

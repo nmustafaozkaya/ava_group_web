@@ -1,0 +1,47 @@
+/* src/components/Projects.module.css */
+
+.scrollWrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.scrollWrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.cursorLeft {
+  cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0iIzAwMDAwMCIgdmlld0JveD0iMCAwIDI1NiAyNTYiPjxwYXRoIGQ9Ik0xNjUuNjYsMjAyLjM0YTgsMTAsMCwwLDEsLTExLjMxLDExLjMxbC04MC04MGE4LDgsMCwwLDEsMC0xMS4zMWw4MC04MGE4LDgsMCwwLDEsMTEuMzEsMTEuMzFMOTEuMzEsMTI4WiIvPjwvc3ZnPg==")
+      16 16,
+    w-resize;
+}
+
+.cursorRight {
+  cursor: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0iIzAwMDAwMCIgdmlld0JveD0iMCAwIDI1NiAyNTYiPjxwYXRoIGQ9Im0xODQuMTMsMTE1LjM4LTgwLTgwYTgsOCwwLDAsMC0xMS4zMSwxMS4zMUwxNjQuNjksMTI4LDkyLjgsMTk5LjU5YTgsOCwwLDAsMCwxMS4zMSwxMS4zMWw4MC04MGE4LDgsMCwwLDAsLjA1LTExLjMxWiIvPjwvc3ZnPg==")
+      16 16,
+    e-resize;
+}
+
+.cursorDefault {
+  cursor: grab;
+}
+
+.cursorGrabbing {
+  cursor: grabbing;
+}
+
+.scrollWrapper > * {
+  pointer-events: none;
+}
+
+.scrollWrapper > * a,
+.scrollWrapper > * button {
+  pointer-events: auto;
+}

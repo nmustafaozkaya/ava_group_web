@@ -1,0 +1,126 @@
+{
+  "Metadata": {
+    "title": "AVA Group | Mimarlık ve İnşaat",
+    "description": "AVA Group, modern mimari ve yenilikçi inşaat çözümleri sunar. Tamamlanmış, devam eden ve gelecek projelerimizi keşfedin."
+  },
+  "status": {
+    "COMPLETED": "Tamamlandı",
+    "UNDER_CONSTRUCTION": "Yapım Aşamasında",
+    "IN_DESIGN": "Tasarım Aşamasında"
+  },
+  "Navbar": {
+    "completedProjects": "Tamamladığımız Projeler",
+    "underConstructionProjects": "Üzerinde Çalıştığımız Projeler",
+    "upcomingProjects": "Gelecek Projelerimiz",
+    "contactButton": "İletişime Geçin",
+    "contactInfoTitle": "İletişim Bilgileri",
+    "phone": "Telefon",
+    "address": "Adres",
+    "email": "E-posta",
+    "clickForLocation": "Konum için tıklayın",
+    "settings": "Ayarlar",
+    "theme": "Tema",
+    "language": "Dil",
+    "openSettings": "Ayarları Aç",
+    "mobileMenu": "Mobil Menü"
+  },
+  "projects": {
+    "completedProjectsTitle": "Tamamladığımız Projelerimiz",
+    "underConstructionTitle": "Üzerinde Çalıştığımız Projelerimiz",
+    "inDesignTitle": "Gelecek Projelerimiz",
+    "noProjectsYet": "Henüz {status} proje bulunmamaktadır.",
+    "viewDetails": "Detayları Görüntüle",
+    "heathrow": {
+      "leftTitle": "Heathrow Havalimanı Genişletme",
+      "desc": "Heathrow Havalimanı'nın kapasitesini ve yolcu deneyimini artırmaya yönelik büyük bir genişletme projesi. Proje, yeni terminaller, pistler ve kapsamlı altyapı iyileştirmelerini içeriyordu.",
+      "location": "Londra, Birleşik Krallık",
+      "client": "Heathrow Airport Holdings Ltd.",
+      "typology": "Havalimanı Altyapısı"
+    },
+    "changi": {
+      "leftTitle": "Changi Havalimanı Jewel Kompleksi",
+      "desc": "Şelale, bahçeler, perakende ve yeme-içme alanları içeren çok boyutlu bir yaşam merkezi olan ikonik Jewel Changi Havalimanı'nın geliştirilmesi.",
+      "location": "Singapur",
+      "client": "Changi Airport Group",
+      "typology": "Karma Kullanımlı Perakende & Havalimanı"
+    },
+    "incheon": {
+      "leftTitle": "Incheon Havalimanı Terminal 2",
+      "desc": "Incheon Uluslararası Havalimanı'nda artan verimlilik ve yolcu konforunu hedefleyen yeni, son teknoloji Terminal 2'nin inşası.",
+      "location": "Incheon, Güney Kore",
+      "client": "Incheon International Airport Corporation",
+      "typology": "Havalimanı Terminali"
+    },
+    "lagos": {
+      "leftTitle": "Lagos Havalimanı Modernizasyonu",
+      "desc": "Lagos'taki Murtala Muhammed Uluslararası Havalimanı'nın yeni yolcu tesisleri ve kargo elleçleme alanlarını içeren devam eden modernizasyon ve genişletme çalışmaları.",
+      "location": "Lagos, Nijerya",
+      "client": "Nijerya Federal Havalimanları Otoritesi (FAAN)",
+      "typology": "Havalimanı Modernizasyonu"
+    },
+    "sydney": {
+      "leftTitle": "Sidney Havalimanı Yeniden Geliştirme",
+      "desc": "Trafik akışını ve yolcu kolaylığını artırmak amacıyla Sidney Havalimanı'ndaki kara tarafı bölgesinin yeniden geliştirilmesi ve terminal erişiminde iyileştirmeler.",
+      "location": "Sidney, Avustralya",
+      "client": "Sydney Airport Corporation Limited",
+      "typology": "Şehircilik & Altyapı"
+    },
+    "capeTown": {
+      "leftTitle": "Cape Town Havalimanı Pist Uzatma",
+      "desc": "Cape Town Uluslararası Havalimanı ana pistinin daha büyük uçakları ağırlamak ve operasyonel esnekliği artırmak için uzatılması.",
+      "location": "Cape Town, Güney Afrika",
+      "client": "Güney Afrika Havalimanları Şirketi (ACSA)",
+      "typology": "Altyapı"
+    },
+    "gelephu": {
+      "leftTitle": "Gelephu Farkındalık Şehri Havalimanı",
+      "desc": "Butan'da sürdürülebilir ve yenilikçi tasarıma odaklanan Gelephu Farkındalık Şehri projesinin bir parçası olarak önerilen uluslararası havalimanı.",
+      "location": "Gelephu, Butan",
+      "client": "Butan Kraliyet Hükümeti",
+      "typology": "Masterplan & Havalimanı"
+    },
+    "zayed": {
+      "leftTitle": "Zayed Havalimanı Orta Saha Terminali",
+      "desc": "Zayed Uluslararası Havalimanı'nda kapasiteyi önemli ölçüde artırmak ve dünya standartlarında tesisler sunmak için yeni bir Orta Saha Terminal Kompleksi'nin gelecekteki geliştirilmesi.",
+      "location": "Abu Dabi, BAE",
+      "client": "Abu Dhabi Havalimanları Şirketi (ADAC)",
+      "typology": "Havalimanı Terminali"
+    },
+    "valencia": {
+      "leftTitle": "Valensiya Havalimanı Eko-Genişletme",
+      "desc": "Sürdürülebilir tasarım ve enerji verimliliğine odaklanan Valensiya Uluslararası Havalimanı'nın planlanan çevre dostu genişletmesi.",
+      "location": "Valensiya, İspanya",
+      "client": "Aena",
+      "typology": "Sürdürülebilir Tasarım"
+    }
+  },
+  "contact": {
+    "title": "Bizimle İletişime Geçin",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "address": "Adres",
+    "clickForLocation": "Konum için tıklayın",
+    "close": "Kapat"
+  },
+
+  "contactus": {
+    "triggerButton": "Bizimle İletişime Geçin",
+    "panelTitle": "İletişim",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "address": "Adres",
+    "clickForLocation": "Konum için tıklayın",
+    "close": "Kapat"
+  },
+  "structured_info": {
+    "client": "MÜŞTERİ",
+    "typology": "TİPOLOJİ",
+    "status": "DURUM",
+    "details_title": "Proje Detayları"
+  },
+  "location": {
+    "view_on_maps": "Haritada görüntüle",
+    "open_maps": "Google Maps'te Aç",
+    "no_location": "Konum bilgisi mevcut değil"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "Metadata": {
+    "title": "AVA Group | Architecture and Construction",
+    "description": "AVA Group offers modern architecture and innovative construction solutions. Discover our completed, ongoing, and future projects."
+  },
+  "status": {
+    "COMPLETED": "Completed",
+    "UNDER_CONSTRUCTION": "Under Construction",
+    "IN_DESIGN": "In Design"
+  },
+  "Navbar": {
+    "completedProjects": "Completed Projects",
+    "underConstructionProjects": "Projects Under Construction",
+    "upcomingProjects": "Upcoming Projects",
+    "contactButton": "Get in Touch",
+    "contactInfoTitle": "Contact Information",
+    "phone": "Phone",
+    "address": "Address",
+    "email": "Email",
+    "clickForLocation": "Click for location",
+    "settings": "Settings",
+    "theme": "Theme",
+    "language": "Language",
+    "openSettings": "Open Settings",
+    "mobileMenu": "Mobile Menu"
+  },
+  "projects": {
+    "completedProjectsTitle": "Our Completed Projects",
+    "underConstructionTitle": "Projects We Are Working On",
+    "inDesignTitle": "Our Future Projects",
+    "noProjectsYet": "No {status} projects yet.",
+    "viewDetails": "View Details",
+    "heathrow": {
+      "leftTitle": "Heathrow Airport Expansion",
+      "desc": "A major expansion of Heathrow Airport to increase capacity and passenger experience. The project involved new terminals, runways, and extensive infrastructure upgrades.",
+      "location": "London, United Kingdom",
+      "client": "Heathrow Airport Holdings Ltd.",
+      "typology": "Airport Infrastructure"
+    },
+    "changi": {
+      "leftTitle": "Changi Airport Jewel Complex",
+      "desc": "Development of the iconic Jewel Changi Airport, a multi-dimensional lifestyle destination featuring a waterfall, gardens, retail, and dining.",
+      "location": "Singapore",
+      "client": "Changi Airport Group",
+      "typology": "Mixed-Use Retail & Airport"
+    },
+    "incheon": {
+      "leftTitle": "Incheon Airport Terminal 2",
+      "desc": "Construction of a new, state-of-the-art Terminal 2 at Incheon International Airport, aiming for increased efficiency and passenger comfort.",
+      "location": "Incheon, South Korea",
+      "client": "Incheon International Airport Corporation",
+      "typology": "Airport Terminal"
+    },
+    "lagos": {
+      "leftTitle": "Lagos Airport Modernization",
+      "desc": "Ongoing modernization and expansion of Murtala Muhammed International Airport in Lagos, including new passenger facilities and cargo handling areas.",
+      "location": "Lagos, Nigeria",
+      "client": "Federal Airports Authority of Nigeria (FAAN)",
+      "typology": "Airport Modernization"
+    },
+    "sydney": {
+      "leftTitle": "Sydney Airport Redevelopment",
+      "desc": "Redevelopment of the landside precinct and improvements to terminal access at Sydney Airport to enhance traffic flow and passenger convenience.",
+      "location": "Sydney, Australia",
+      "client": "Sydney Airport Corporation Limited",
+      "typology": "Urbanism & Infrastructure"
+    },
+    "capeTown": {
+      "leftTitle": "Cape Town Airport Runway Extension",
+      "desc": "Extension of the main runway at Cape Town International Airport to accommodate larger aircraft and increase operational flexibility.",
+      "location": "Cape Town, South Africa",
+      "client": "Airports Company South Africa (ACSA)",
+      "typology": "Infrastructure"
+    },
+    "gelephu": {
+      "leftTitle": "Gelephu Mindfulness City Airport",
+      "desc": "Proposed international airport as part of the Gelephu Mindfulness City project, aiming for sustainable and innovative design in Bhutan.",
+      "location": "Gelephu, Bhutan",
+      "client": "Royal Government of Bhutan",
+      "typology": "Masterplan & Airport"
+    },
+    "zayed": {
+      "leftTitle": "Zayed Airport Midfield Terminal",
+      "desc": "Future development of a new Midfield Terminal Complex at Zayed International Airport to significantly boost capacity and offer world-class facilities.",
+      "location": "Abu Dhabi, UAE",
+      "client": "Abu Dhabi Airports Company (ADAC)",
+      "typology": "Airport Terminal"
+    },
+    "valencia": {
+      "leftTitle": "Valencia Airport Eco-Expansion",
+      "desc": "Planned eco-friendly expansion of Valencia International Airport focusing on sustainable design and energy efficiency.",
+      "location": "Valencia, Spain",
+      "client": "Aena",
+      "typology": "Sustainable Design"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "clickForLocation": "Click for Location",
+    "close": "Close"
+  },
+  "contactus": {
+    "triggerButton": "Contact Us",
+    "panelTitle": "Contact Information",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "clickForLocation": "Click for Location",
+    "close": "Close"
+  },
+  "structured_info": {
+    "client": "CLIENT",
+    "typology": "TYPOLOGY",
+    "status": "STATUS",
+    "details_title": "Project Details"
+  },
+  "location": {
+    "view_on_maps": "View on maps",
+    "open_maps": "Open in Google Maps",
+    "no_location": "Location information not available"
+  }
+}
