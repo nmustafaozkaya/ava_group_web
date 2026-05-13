@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 
 import SplashScreen from "../../components/SplashScreen";
-import Navbar from "../../components/Navbar";
 import BottomSection from "../../components/BottomSection";
 
 interface ProjectDetail {
@@ -53,8 +52,21 @@ export default function Home() {
 
   useEffect(() => {
     fetch("/api/projects")
-      .then((res) => res.json())
-      .then((data: ProjectData[]) => setProjects(data))
+      .then(async (res) => {
+        const ct = res.headers.get("content-type") ?? "";
+        if (!res.ok || !ct.includes("application/json")) {
+          console.error(
+            "Projects API error:",
+            res.status,
+            "Expected JSON; is Prisma generated and DATABASE_URL set?"
+          );
+          return null;
+        }
+        return (await res.json()) as ProjectData[];
+      })
+      .then((data) => {
+        if (data) setProjects(data);
+      })
       .catch(console.error);
   }, []);
 
@@ -69,9 +81,7 @@ export default function Home() {
       )}
 
       {!showSplash && (
-        <main className="flex flex-col h-screen overflow-hidden">
-          <Navbar />
-
+        <div className="flex flex-col h-screen overflow-hidden">
           <div
             ref={scrollContainerRef}
             className="flex-1 overflow-y-auto scroll-smooth"
@@ -81,7 +91,7 @@ export default function Home() {
               projects={projects}
             />
           </div>
-        </main>
+        </div>
       )}
     </>
   );

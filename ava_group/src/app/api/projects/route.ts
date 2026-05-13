@@ -1,7 +1,7 @@
-import { PrismaClient, DetailType } from "@prisma/client";
+import { DetailType } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
 
 // Detail verileri için type tanımı
 type DetailInput = {
