@@ -18,8 +18,8 @@
         "name": "next"
       }
     ],
-    // --- DÜZELTME BURADA ---
-    "baseUrl": ".", // BU SATIR EKLENDİ
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }
