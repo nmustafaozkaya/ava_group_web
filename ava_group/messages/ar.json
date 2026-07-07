@@ -14,6 +14,7 @@
     "upcomingProjects": "المشاريع المستقبلية",
     "contactButton": "تواصل معنا",
     "contactInfoTitle": "معلومات الاتصال",
+    "contactSubtitle": "يمكنك التواصل معنا عبر التفاصيل التالية.",
     "phone": "الهاتف",
     "address": "العنوان",
     "email": "البريد الإلكتروني",
@@ -22,6 +23,8 @@
     "theme": "المظهر",
     "language": "اللغة",
     "openSettings": "فتح الإعدادات",
+    "openSocialMedia": "وسائل التواصل",
+    "socialMedia": "وسائل التواصل الاجتماعي",
     "mobileMenu": "القائمة المحمولة"
   },
   "projects": {
@@ -93,14 +96,6 @@
       "client": "Aena",
       "typology": "تصميم مستدام"
     }
-  },
-  "contact": {
-    "title": "تواصل معنا",
-    "phone": "الهاتف",
-    "email": "البريد الإلكتروني",
-    "address": "العنوان",
-    "clickForLocation": "انقر للموقع",
-    "close": "إغلاق"
   },
   "contactus": {
     "triggerButton": "تواصل معنا",

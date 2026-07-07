@@ -1,8 +1,9 @@
 "use client";
-import { RefObject, useState, useEffect, useCallback } from "react";
+import { RefObject, useCallback, useState, useEffect } from "react";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import ProjectDetailRenderer from "./ProjectDetailRenderer";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface BottomSectionProps {
   scrollContainerRef: RefObject<HTMLDivElement | null>;
@@ -49,23 +50,7 @@ interface ProjectData {
   details: ProjectDetail[];
 }
 
-// Mobil cihaz tespiti için hook
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint
-    };
-
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
-
-    return () => window.removeEventListener("resize", checkIfMobile);
-  }, []);
-
-  return isMobile;
-};
 
 const ProjectCard = ({
   project,
@@ -81,43 +66,28 @@ const ProjectCard = ({
   isMobile: boolean;
 }) => {
   const currentLocale = useLocale();
-  const naturalImageWidth = 1200;
-  const naturalImageHeight = 750;
 
-  // Dil seçimi için helper fonksiyon
   const getLocalizedText = useCallback(
     (baseKey: string): string => {
       const localizedKey = `${baseKey}_${currentLocale}` as keyof ProjectData;
       const localizedText = project[localizedKey];
-
-      // Fallback olarak İngilizce kullan
       const fallbackKey = `${baseKey}_en` as keyof ProjectData;
       const fallbackText = project[fallbackKey];
-
-      if (typeof localizedText === "string" && localizedText) {
-        return localizedText;
-      }
-      if (typeof fallbackText === "string") {
-        return fallbackText;
-      }
+      if (typeof localizedText === "string" && localizedText) return localizedText;
+      if (typeof fallbackText === "string") return fallbackText;
       return "";
     },
     [currentLocale, project]
   );
 
-  // Proje alanlarını dinamik dil seçimi ile çekme
   const leftTitle = getLocalizedText("leftTitle");
-
-  // Mobilde her zaman detay göster, desktop'ta seçili olana göre
   const shouldShowDetail = isMobile || isSelected;
 
   return (
     <div
       id={id}
       className={`relative transition-all duration-700 ease-in-out ${
-        shouldShowDetail
-          ? "p-0 mb-16 max-w-full z-10"
-          : "p-6 mb-10 max-w-[1000px] z-1"
+        shouldShowDetail ? "mb-20 max-w-full" : "mb-8 max-w-full"
       }`}
     >
       {shouldShowDetail ? (
@@ -126,37 +96,46 @@ const ProjectCard = ({
           details={project.details || []}
         />
       ) : (
-        <div className="flex flex-row items-start justify-start gap-20 pl-10 -ml-40">
-          {/* İkon ve Başlık Bölümü */}
-          <div className="flex flex-col items-start w-[140px] pt-15 flex-shrink-0">
-            {project.icon && (
+        /* ── Centered card wrapper ── */
+        <div
+          onClick={onSelect}
+          className="group flex flex-row items-center justify-center cursor-pointer hover:bg-muted/10 transition-colors duration-200 w-full py-6"
+        >
+          {/* Centered target zone of exactly the thumbnail's width */}
+          <div className="relative flex items-center justify-center w-[340px] h-[210px]">
+            
+            {/* Metadata (Absolutely positioned to the left of the centered thumbnail) */}
+            <div className="absolute right-[calc(100%+2.5rem)] flex flex-col items-end text-right w-[280px] gap-2 select-none">
+              {project.icon && (
+                <div className="w-8 h-8 relative flex-shrink-0 opacity-70 group-hover:opacity-100 transition-opacity">
+                  <Image
+                    src={project.icon}
+                    alt="project icon"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              )}
+              <div>
+                <h3 className="text-[15px] font-normal text-foreground leading-snug">
+                  {leftTitle}
+                </h3>
+                <p className="text-[11px] text-[#797979] dark:text-[#9a9a9a] uppercase tracking-wide mt-0.5">
+                  {getLocalizedText("location")}, {project.year}
+                </p>
+              </div>
+            </div>
+
+            {/* Thumbnail (Exactly centered) */}
+            <div className="relative w-full h-full overflow-hidden rounded-sm">
               <Image
-                src={project.icon}
-                alt="project icon"
-                width={40}
-                height={40}
-                className="mb-2 project-icon"
-                style={{ objectFit: "contain" }}
+                src={project.src}
+                alt={project.alt}
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                draggable="false"
               />
-            )}
-            <h3 className="text-2xl font-bold text-foreground text-left">
-              {leftTitle}
-            </h3>
-          </div>
-          {/* Resim Bölümü */}
-          <div
-            onClick={onSelect}
-            className="relative cursor-pointer w-[400px] h-[280px] overflow-hidden rounded-xl shadow-lg transition-all"
-          >
-            <Image
-              src={project.src}
-              alt={project.alt}
-              width={naturalImageWidth}
-              height={naturalImageHeight}
-              className="w-full h-full object-cover"
-              priority
-              draggable={false}
-            />
+            </div>
           </div>
         </div>
       )}
@@ -240,13 +219,16 @@ export default function BottomSection({
     return (
       <section
         id={sectionId}
-        className="w-full max-w-[1920px] mx-auto mb-20 scroll-mt-24 flex flex-col"
+        className="w-full max-w-[1920px] mx-auto mb-24 scroll-mt-24 flex flex-col"
       >
-        <h2 className="text-4xl font-bold mb-10 text-center text-foreground">
-          {translatedTitle}
-        </h2>
+        {/* BIG.dk-style section header: small uppercase */}
+        <div className="flex items-center gap-4 px-10 py-4 border-t border-border mb-2">
+          <h2 className="text-[11px] uppercase tracking-widest text-[#797979] dark:text-[#9a9a9a] font-normal">
+            {translatedTitle}
+          </h2>
+        </div>
         {projectsToRender.length > 0 ? (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col">
             {projectsToRender.map((project, idx) => {
               const globalIndex = startIndex + idx;
               const elementId = `${sectionId}-card-${project.id}`;

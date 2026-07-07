@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client"; // <-- bunu ekle
 
 interface Params {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 interface DetailInput {
@@ -22,7 +22,8 @@ interface DetailInput {
 }
 
 export async function GET(request: Request, { params }: Params) {
-  const id = Number(params.id);
+  const { id: rawId } = await params;
+  const id = Number(rawId);
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid project ID" }, { status: 400 });
   }
@@ -47,7 +48,8 @@ export async function GET(request: Request, { params }: Params) {
 }
 
 export async function PUT(request: Request, { params }: Params) {
-  const id = Number(params.id);
+  const { id: rawId } = await params;
+  const id = Number(rawId);
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid project ID" }, { status: 400 });
   }
@@ -162,7 +164,8 @@ export async function PUT(request: Request, { params }: Params) {
 }
 
 export async function DELETE(request: Request, { params }: Params) {
-  const id = Number(params.id);
+  const { id: rawId } = await params;
+  const id = Number(rawId);
   if (isNaN(id)) {
     return NextResponse.json({ error: "Invalid project ID" }, { status: 400 });
   }

@@ -2,8 +2,9 @@
 "use client";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback } from "react";
 import styles from "../style/Projects.module.css";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface ProjectDetailFromDb {
   id: number;
@@ -48,29 +49,35 @@ interface Props {
   details: ProjectDetailFromDb[];
 }
 
-// Mobil cihaz tespiti için hook
-const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
+/* ─── BIG.dk–style meta row ─── */
+function MetaItem({ label, value }: { label: string; value: string }) {
+  if (!value) return null;
+  return (
+    <div>
+      <p className="text-[10px] uppercase tracking-widest text-[#797979] dark:text-[#9a9a9a] mb-[3px]">
+        {label}
+      </p>
+      <p className="text-xs uppercase tracking-wide text-foreground leading-tight">
+        {value}
+      </p>
+    </div>
+  );
+}
 
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint
-    };
-
-    checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
-
-    return () => window.removeEventListener("resize", checkIfMobile);
-  }, []);
-
-  return isMobile;
-};
+/* ─── Google Maps URL validator ─── */
+function isValidMapsEmbed(url: string) {
+  return (
+    url.includes("google.com/maps/embed") ||
+    url.includes("maps.google.com/maps/embed")
+  );
+}
 
 export default function ProjectDetailRenderer({ project, details }: Props) {
   const t = useTranslations();
   const currentLocale = useLocale();
   const isMobile = useIsMobile();
 
+  /* ── Localisation helper ── */
   const getLocalizedText = useCallback(
     <T extends ProjectDataFromDb | ProjectDetailFromDb>(
       obj: T,
@@ -85,16 +92,11 @@ export default function ProjectDetailRenderer({ project, details }: Props) {
     ): string => {
       const localizedKey = `${baseKey}_${currentLocale}` as keyof T;
       const localizedText = obj[localizedKey];
-
       const fallbackKey = `${baseKey}_en` as keyof T;
       const fallbackText = obj[fallbackKey];
 
-      if (typeof localizedText === "string") {
-        return localizedText;
-      }
-      if (typeof fallbackText === "string") {
-        return fallbackText;
-      }
+      if (typeof localizedText === "string") return localizedText;
+      if (typeof fallbackText === "string") return fallbackText;
       return "";
     },
     [currentLocale]
@@ -102,51 +104,31 @@ export default function ProjectDetailRenderer({ project, details }: Props) {
 
   const getDetailContent = useCallback(
     (detail: ProjectDetailFromDb): string => {
-      if (detail.type === "text") {
-        return getLocalizedText(detail, "content");
-      } else {
-        return detail.content || "";
-      }
+      if (detail.type === "text") return getLocalizedText(detail, "content");
+      return detail.content || "";
     },
     [getLocalizedText]
   );
 
-  // Google Maps URL'sinin geçerli olup olmadığını kontrol eden fonksiyon
-  const isValidGoogleMapsEmbedUrl = useCallback((url: string): boolean => {
-    return (
-      url.includes("google.com/maps/embed") ||
-      url.includes("maps.google.com/maps/embed")
-    );
-  }, []);
-
-  // Desktop için scroll ve cursor işlemleri
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  /* ── Desktop drag-scroll state ── */
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [cursorState, setCursorState] = useState<"left" | "right" | "default">(
     "default"
   );
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef({ x: 0, scrollLeft: 0 });
-  const [isExpanded, setIsExpanded] = useState(false);
-  const naturalImageWidth = 1200;
-  const naturalImageHeight = 750;
 
   const handleMouseMove = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (isMobile) return; // Mobilde mouse işlemleri devre dışı
-
-      const container = scrollContainerRef.current;
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (isMobile) return;
+      const container = scrollRef.current;
       if (!container) return;
       const rect = container.getBoundingClientRect();
-      const mouseX = event.clientX - rect.left;
-      const containerWidth = rect.width;
-      const activationZoneWidth = containerWidth * 0.15;
-      if (mouseX < activationZoneWidth) {
-        setCursorState("left");
-      } else if (mouseX > containerWidth - activationZoneWidth) {
-        setCursorState("right");
-      } else {
-        setCursorState("default");
-      }
+      const x = e.clientX - rect.left;
+      const zone = rect.width * 0.15;
+      if (x < zone) setCursorState("left");
+      else if (x > rect.width - zone) setCursorState("right");
+      else setCursorState("default");
     },
     [isMobile]
   );
@@ -158,30 +140,24 @@ export default function ProjectDetailRenderer({ project, details }: Props) {
   }, [isMobile]);
 
   const handleMouseDown = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (isMobile) return;
-
-      const container = scrollContainerRef.current;
-      if (!container || cursorState !== "default") return;
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (isMobile || cursorState !== "default") return;
+      const container = scrollRef.current;
+      if (!container) return;
       isDraggingRef.current = true;
-      dragStartRef.current = {
-        x: event.pageX,
-        scrollLeft: container.scrollLeft,
-      };
+      dragStartRef.current = { x: e.pageX, scrollLeft: container.scrollLeft };
     },
     [cursorState, isMobile]
   );
 
   const handleMouseMoveGlobal = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
+    (e: React.MouseEvent<HTMLDivElement>) => {
       if (isMobile) return;
-
-      handleMouseMove(event);
+      handleMouseMove(e);
       if (!isDraggingRef.current || cursorState !== "default") return;
-      const container = scrollContainerRef.current;
+      const container = scrollRef.current;
       if (!container) return;
-      const x = event.pageX;
-      const walk = (x - dragStartRef.current.x) * 2;
+      const walk = (e.pageX - dragStartRef.current.x) * 2;
       container.scrollLeft = dragStartRef.current.scrollLeft - walk;
     },
     [handleMouseMove, cursorState, isMobile]
@@ -194,438 +170,424 @@ export default function ProjectDetailRenderer({ project, details }: Props) {
 
   const handleClick = useCallback(() => {
     if (isMobile) return;
-
-    const container = scrollContainerRef.current;
+    const container = scrollRef.current;
     if (!container || isDraggingRef.current) return;
-    const scrollAmount = container.clientWidth * 0.7;
-    if (cursorState === "left") {
-      container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
-    } else if (cursorState === "right") {
-      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-    setIsExpanded(true);
+    const amt = container.clientWidth * 0.7;
+    if (cursorState === "left")
+      container.scrollBy({ left: -amt, behavior: "smooth" });
+    else if (cursorState === "right")
+      container.scrollBy({ left: amt, behavior: "smooth" });
   }, [cursorState, isMobile]);
 
   const cursorClass = isMobile
     ? ""
-    : {
-        left: styles.cursorLeft,
-        right: styles.cursorRight,
-        default: isDraggingRef.current
-          ? styles.cursorGrabbing
-          : styles.cursorDefault,
-      }[cursorState];
+    : { left: styles.cursorLeft, right: styles.cursorRight, default: isDraggingRef.current ? styles.cursorGrabbing : styles.cursorDefault }[cursorState];
 
-  // Mobil layout - yatay scroll
-  if (isMobile) {
+  /* ────────────────────────────────────────────
+     Left panel shared between mobile & desktop
+  ──────────────────────────────────────────── */
+  const LeftPanel = ({ compact = false }: { compact?: boolean }) => (
+    <div
+      className={`flex flex-col gap-5 ${
+        compact
+          ? "w-full"
+          : "w-[220px] flex-shrink-0 self-start pt-8 pl-8 pr-4"
+      }`}
+    >
+      {/* Icon */}
+      {project.icon && (
+        <div className="w-10 h-10 relative flex-shrink-0">
+          <Image
+            src={project.icon}
+            alt="project icon"
+            fill
+            className="object-contain"
+          />
+        </div>
+      )}
+
+      {/* Title + location */}
+      <div>
+        <h3 className="text-[18px] leading-[20px] font-normal text-foreground">
+          {getLocalizedText(project, "leftTitle")}
+        </h3>
+        <p className="mt-1 text-[12px] text-[#797979] dark:text-[#9a9a9a] uppercase tracking-wide">
+          {getLocalizedText(project, "location")}, {project.year}
+        </p>
+      </div>
+
+      {/* Meta grid */}
+      <div className="flex flex-col gap-3">
+        <MetaItem
+          label={t("structured_info.client")}
+          value={getLocalizedText(project, "client")}
+        />
+        <MetaItem
+          label={t("structured_info.typology")}
+          value={getLocalizedText(project, "typology")}
+        />
+        <MetaItem
+          label={t("structured_info.status")}
+          value={t(`status.${project.status}`, { fallback: project.status })}
+        />
+      </div>
+    </div>
+  );
+
+  /* ─── Detail item renderer (shared) ─── */
+  const renderDetail = (detail: ProjectDetailFromDb, index: number) => {
+    const title = getLocalizedText(detail, "title");
+    const content = getDetailContent(detail);
+
     return (
-      <div className="w-full overflow-x-auto">
-        <div className="flex flex-row gap-8 w-max px-4 py-6">
-          {/* Ana Görsel - Mobilde ilk sırada */}
-          <div className="w-[400px] h-[280px] relative flex-shrink-0 rounded-lg overflow-hidden shadow-lg">
+      <div
+        key={index}
+        className={`flex-shrink-0 flex flex-col gap-3 ${
+          isMobile ? "w-[85vw]" : "w-[680px]"
+        }`}
+      >
+        {/* Title label */}
+        {title && (
+          <p className="text-[10px] uppercase tracking-widest text-[#797979] dark:text-[#9a9a9a]">
+            {title}
+          </p>
+        )}
+
+        {detail.type === "image" && content && (
+          <div
+            className={`relative rounded-sm overflow-hidden ${
+              isMobile ? "w-full h-[260px]" : "w-full h-[500px]"
+            }`}
+          >
             <Image
-              quality={100}
-              src={project.src}
-              alt={project.alt}
-              width={naturalImageWidth}
-              height={naturalImageHeight}
-              className="w-full h-full object-cover"
-              priority
+              quality={90}
+              src={content}
+              alt={title || ""}
+              fill
+              className="object-cover"
               draggable="false"
               onDragStart={(e) => e.preventDefault()}
             />
           </div>
+        )}
 
-          {/* Sol Panel - Mobilde ikinci sırada */}
-          <div className="w-[280px] flex-shrink-0 flex flex-col space-y-4">
-            {project.icon && (
-              <Image
-                quality={100}
-                src={project.icon}
-                alt="project icon"
-                width={40}
-                height={40}
-                className="mb-2 project-icon"
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  objectFit: "contain",
-                }}
-              />
-            )}
-            <h3 className="text-xl font-bold text-foreground">
-              {getLocalizedText(project, "leftTitle")}
-            </h3>
-            <p className="text-base text-muted-foreground">
-              {getLocalizedText(project, "location")}, {project.year}
-            </p>
-
-            <div>
-              <p className="text-sm font-semibold text-muted-foreground uppercase mb-1">
-                {t("structured_info.client")}
-              </p>
-              <p className="text-foreground text-base">
-                {getLocalizedText(project, "client")}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-sm font-semibold text-muted-foreground uppercase mb-1">
-                {t("structured_info.typology")}
-              </p>
-              <p className="text-foreground text-sm">
-                {getLocalizedText(project, "typology")}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase mb-1">
-                {t("structured_info.status")}
-              </p>
-              <p className="text-foreground text-sm">
-                {t(`status.${project.status}`, { fallback: project.status })}
-              </p>
-            </div>
+        {detail.type === "video" && content && (
+          <div
+            className={`relative rounded-sm overflow-hidden ${
+              isMobile ? "w-full h-[260px]" : "w-full h-[500px]"
+            }`}
+          >
+            <video
+              controls
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover"
+              src={content}
+            />
           </div>
+        )}
 
-          {/* Açıklama - Üçüncü panel */}
-          <div className="w-[300px] flex-shrink-0 flex flex-col">
-            <h4 className="text-sm font-semibold mb-3 text-primary">
+        {detail.type === "text" && content && (
+          <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap max-w-[520px]">
+            {content}
+          </p>
+        )}
+
+        {detail.type === "location" && (
+          <div className="space-y-3">
+            {content && isValidMapsEmbed(content) ? (
+              <div
+                className={`relative rounded-sm overflow-hidden border border-border ${
+                  isMobile ? "w-full h-[220px]" : "w-full h-[460px]"
+                }`}
+              >
+                <iframe
+                  src={content}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title={title || t("structured_info.status")}
+                  className="w-full h-full"
+                />
+              </div>
+            ) : content ? (
+              <div className="bg-muted/50 p-3 rounded-sm border border-border">
+                <p className="text-[10px] text-muted-foreground mb-2 uppercase tracking-wide">
+                  {t("location.view_on_maps")}
+                </p>
+                <a
+                  href={content}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-foreground text-background px-3 py-1.5 rounded-sm text-xs uppercase tracking-wide hover:opacity-80 transition-opacity"
+                >
+                  {t("location.open_maps")}
+                </a>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                {t("location.no_location")}
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  /* ─────────────────────
+     MOBILE LAYOUT
+  ───────────────────── */
+  if (isMobile) {
+    return (
+      <div className="w-full">
+        {/* Hero image */}
+        <div className="relative w-full h-[260px] overflow-hidden">
+          <Image
+            quality={90}
+            src={project.src}
+            alt={project.alt}
+            fill
+            className="object-cover"
+            priority
+            draggable="false"
+          />
+        </div>
+
+        {/* Left panel as inline block */}
+        <div className="px-5 py-6 border-b border-border">
+          <LeftPanel compact />
+        </div>
+
+        {/* Description */}
+        {getLocalizedText(project, "description") && (
+          <div className="px-5 py-6 border-b border-border">
+            <p className="text-[10px] uppercase tracking-widest text-[#797979] dark:text-[#9a9a9a] mb-3">
               {t("structured_info.details_title")}
-            </h4>
-            <p className="text-muted-foreground whitespace-pre-wrap text-xs leading-relaxed">
+            </p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
               {getLocalizedText(project, "description")}
             </p>
           </div>
+        )}
 
-          {/* Detaylar - Yan yana devam eder */}
-          {details.map((detail, index) => (
-            <div
-              key={index}
-              className="w-[380px] flex-shrink-0 space-y-3 flex flex-col"
-            >
-              {getLocalizedText(detail, "title") && (
-                <h5 className="font-semibold text-foreground text-base">
-                  {getLocalizedText(detail, "title")}
-                </h5>
-              )}
-
-              {detail.type === "image" && (
-                <div className="relative w-full h-[320px] rounded-lg overflow-hidden">
-                  <Image
-                    quality={100}
-                    src={getDetailContent(detail)}
-                    alt={getLocalizedText(detail, "title") || ""}
-                    fill
-                    className="object-cover"
-                    draggable="false"
-                    onDragStart={(e) => e.preventDefault()}
-                  />
-                </div>
-              )}
-
-              {detail.type === "video" && (
-                <div className="relative w-full h-[320px] rounded-lg overflow-hidden">
-                  <video
-                    controls
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-full object-cover"
-                    src={getDetailContent(detail)}
-                  >
-                    Video desteklenmiyor.
-                  </video>
-                </div>
-              )}
-
-              {detail.type === "text" && (
-                <p className="text-muted-foreground whitespace-pre-wrap text-sm leading-relaxed">
-                  {getDetailContent(detail)}
-                </p>
-              )}
-
-              {detail.type === "location" && (
-                <div className="w-full space-y-3">
-                  {getDetailContent(detail) &&
-                  isValidGoogleMapsEmbedUrl(getDetailContent(detail)) ? (
-                    <div className="relative w-full h-[240px] rounded-lg overflow-hidden border-2 border-gray-200">
-                      <iframe
-                        src={getDetailContent(detail)}
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        allowFullScreen={true}
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        title={
-                          getLocalizedText(detail, "title") || "Proje Konumu"
-                        }
-                        className="w-full h-full"
-                      />
-                    </div>
-                  ) : getDetailContent(detail) ? (
-                    <div className="bg-gray-50 p-3 rounded-lg border">
-                      <p className="text-xs text-gray-600 mb-2">
-                        {t("location.view_on_maps") || "Haritada görüntüle"}:
-                      </p>
-                      <a
-                        href={getDetailContent(detail)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition-colors"
-                      >
-                        <svg
-                          className="w-3 h-3"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        {t("location.open_maps") || "Google Maps'te Aç"}
-                      </a>
-                    </div>
-                  ) : (
-                    <div className="bg-gray-100 p-3 rounded-lg text-center text-gray-500 text-xs">
-                      {t("location.no_location") ||
-                        "Konum bilgisi mevcut değil"}
-                    </div>
-                  )}
-
-                  {getLocalizedText(detail, "content") && (
-                    <div className="bg-blue-50 p-2 rounded-lg">
-                      <p className="text-blue-800 text-xs">
-                        {getLocalizedText(detail, "content")}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
+        {/* Detail items — horizontal scroll */}
+        {details.length > 0 && (
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex flex-row gap-5 px-5 py-6 w-max">
+              {details.map((detail, i) => renderDetail(detail, i))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     );
   }
 
-  // Desktop layout (orijinal kod)
+  /* ─────────────────────
+     DESKTOP LAYOUT (BIG.dk style)
+     Order: [Hero image] → [Meta panel centered] → [Description] → [Detail items...]
+  ───────────────────── */
   return (
     <div
-      ref={scrollContainerRef}
-      className={`${styles.scrollWrapper} ${cursorClass}`}
+      ref={scrollRef}
+      className={`${styles.scrollWrapper} ${cursorClass} h-[76vh]`}
       onMouseMove={handleMouseMoveGlobal}
       onMouseLeave={handleMouseLeave}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onClick={handleClick}
     >
-      <div
-        className={`flex flex-row gap-8 w-max ${
-          isExpanded ? "px-0 pb-0" : "px-4 pb-4"
-        } pr-0`}
-      >
-        {/* Sol Panel */}
-        <div
-          className={`w-[250px] flex-shrink-0 flex flex-col space-y-4 pt-8 pl-8 ${styles.animatedSlideInLeft}`}
-          style={{ animationDelay: "0.1s" }}
-        >
+      <div className="flex flex-row items-stretch h-full w-max">
+
+        {/* ── Meta panel — LEFT of hero, vertically centered ── */}
+        <div className="flex-shrink-0 w-[260px] flex flex-col justify-center pl-12 pr-6 gap-5">
           {project.icon && (
-            <Image
-              quality={100}
-              src={project.icon}
-              alt="project icon"
-              width={40}
-              height={40}
-              className="mb-4"
-              style={{
-                width: "40px",
-                height: "40px",
-                objectFit: "contain",
-              }}
-            />
+            <div className="w-10 h-10 relative flex-shrink-0">
+              <Image
+                src={project.icon}
+                alt="project icon"
+                fill
+                className="object-contain"
+              />
+            </div>
           )}
-          <h3 className="text-2xl font-bold text-foreground">
-            {getLocalizedText(project, "leftTitle")}
-          </h3>
-          <p className="text-lg text-muted-foreground">
-            {getLocalizedText(project, "location")}, {project.year}
-          </p>
-
           <div>
-            <p className="text-sm font-semibold text-muted-foreground uppercase mb-1">
-              {t("structured_info.client")}
-            </p>
-            <p className="text-foreground">
-              {getLocalizedText(project, "client")}
+            <h3 className="text-[18px] leading-[22px] font-normal text-foreground">
+              {getLocalizedText(project, "leftTitle")}
+            </h3>
+            <p className="mt-[6px] text-[11px] text-[#797979] dark:text-[#9a9a9a] uppercase tracking-wide">
+              {getLocalizedText(project, "location")}, {project.year}
             </p>
           </div>
-
-          <div>
-            <p className="text-sm font-semibold text-muted-foreground uppercase mb-1">
-              {t("structured_info.typology")}
-            </p>
-            <p className="text-foreground">
-              {getLocalizedText(project, "typology")}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-sm font-semibold text-muted-foreground uppercase mb-1">
-              {t("structured_info.status")}
-            </p>
-            <p className="text-foreground">
-              {t(`status.${project.status}`, { fallback: project.status })}
-            </p>
+          <div className="flex flex-col gap-4">
+            <MetaItem
+              label={t("structured_info.client")}
+              value={getLocalizedText(project, "client")}
+            />
+            <MetaItem
+              label={t("structured_info.typology")}
+              value={getLocalizedText(project, "typology")}
+            />
+            <MetaItem
+              label={t("structured_info.status")}
+              value={t(`status.${project.status}`, { fallback: project.status })}
+            />
           </div>
         </div>
 
-        {/* Orta Görsel */}
+        {/* ── Hero image ── */}
         <div
-          className={`w-[700px] h-[480px] relative flex-shrink-0 rounded-xl overflow-hidden shadow-xl ${styles.animatedFadeIn}`}
-          style={{ animationDelay: "0.2s" }}
+          className="relative h-full flex-shrink-0 overflow-hidden"
+          style={{ aspectRatio: "3303/2288" }}
         >
           <Image
-            quality={100}
+            quality={90}
             src={project.src}
             alt={project.alt}
-            width={naturalImageWidth}
-            height={naturalImageHeight}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
             priority
             draggable="false"
             onDragStart={(e) => e.preventDefault()}
           />
         </div>
 
-        {/* Sağ İçerikler */}
-        <div
-          className={`flex flex-row gap-6 flex-shrink-0 ${styles.animatedSlideInRight}`}
-          style={{ animationDelay: "0.3s" }}
-        >
-          <div className="w-[450px] flex-shrink-0 flex flex-col">
-            <h4 className="text-lg font-semibold mb-2 text-primary">
+        {/* ── Description text panel ── */}
+        {getLocalizedText(project, "description") && (
+          <div className="flex-shrink-0 w-[420px] flex flex-col justify-center px-10 gap-4 py-6">
+            <p className="text-[10px] uppercase tracking-widest text-[#797979] dark:text-[#9a9a9a] flex-shrink-0">
               {t("structured_info.details_title")}
-            </h4>
-            <p className="text-muted-foreground whitespace-pre-wrap">
-              {getLocalizedText(project, "description")}
             </p>
+            <div className="overflow-y-auto max-h-[55vh] pr-2 scrollbar-thin">
+              <blockquote className="text-[16px] leading-[1.6] text-foreground font-normal">
+                {getLocalizedText(project, "description")}
+              </blockquote>
+            </div>
           </div>
+        )}
 
-          {details.map((detail, index) => (
-            <div
-              key={index}
-              className={`w-[700px] flex-shrink-0 space-y-3 flex flex-col ${styles.animatedFadeIn}`}
-              style={{ animationDelay: `${0.4 + index * 0.1}s` }}
-            >
-              {getLocalizedText(detail, "title") && (
-                <h5 className="font-semibold text-foreground">
-                  {getLocalizedText(detail, "title")}
-                </h5>
-              )}
+        {/* ── Detail items ── */}
+        {details.map((detail, i) => {
+          const title = getLocalizedText(detail, "title");
+          const content = getDetailContent(detail);
 
-              {detail.type === "image" && (
-                <div className="relative w-full h-[500px] rounded-lg overflow-hidden">
+          if (detail.type === "image" && content) {
+            return (
+              <div key={i} className="flex-shrink-0 flex flex-col h-full">
+                {title && (
+                  <p className="px-8 pt-4 pb-2 text-[10px] uppercase tracking-widest text-[#797979] dark:text-[#9a9a9a]">
+                    {title}
+                  </p>
+                )}
+                <div
+                  className="relative flex-1 overflow-hidden"
+                  style={{ aspectRatio: "3303/2288" }}
+                >
                   <Image
-                    quality={100}
-                    src={getDetailContent(detail)}
-                    alt={getLocalizedText(detail, "title") || ""}
+                    quality={90}
+                    src={content}
+                    alt={title || ""}
                     fill
                     className="object-cover"
                     draggable="false"
                     onDragStart={(e) => e.preventDefault()}
                   />
                 </div>
-              )}
+              </div>
+            );
+          }
 
-              {detail.type === "video" && (
-                <div className="relative w-full h-[500px] rounded-lg overflow-hidden">
+          if (detail.type === "video" && content) {
+            return (
+              <div key={i} className="flex-shrink-0 h-full w-[900px] flex flex-col">
+                {title && (
+                  <p className="px-8 pt-4 pb-2 text-[10px] uppercase tracking-widest text-[#797979] dark:text-[#9a9a9a]">
+                    {title}
+                  </p>
+                )}
+                <div className="flex-1 overflow-hidden">
                   <video
-                    controls
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
+                    controls autoPlay muted loop playsInline
                     className="w-full h-full object-cover"
-                    src={getDetailContent(detail)}
-                  >
-                    Video desteklenmiyor.
-                  </video>
+                    src={content}
+                  />
                 </div>
-              )}
+              </div>
+            );
+          }
 
-              {detail.type === "text" && (
-                <p className="text-muted-foreground whitespace-pre-wrap w-fit max-w-[600px]">
-                  {getDetailContent(detail)}
-                </p>
-              )}
+          if (detail.type === "text" && content) {
+            return (
+              <div key={i} className="flex-shrink-0 w-[420px] flex flex-col justify-center px-10 gap-3 py-6">
+                {title && (
+                  <p className="text-[10px] uppercase tracking-widest text-[#797979] dark:text-[#9a9a9a] flex-shrink-0">
+                    {title}
+                  </p>
+                )}
+                <div className="overflow-y-auto max-h-[55vh] pr-2 scrollbar-thin">
+                  <p className="text-[15px] leading-[1.65] text-muted-foreground whitespace-pre-wrap">
+                    {content}
+                  </p>
+                </div>
+              </div>
+            );
+          }
 
-              {detail.type === "location" && (
-                <div className="w-full space-y-6">
-                  {getDetailContent(detail) &&
-                  isValidGoogleMapsEmbedUrl(getDetailContent(detail)) ? (
-                    <div className="relative w-full h-[500px] rounded-lg overflow-hidden border-2 border-gray-200">
-                      <iframe
-                        src={getDetailContent(detail)}
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        allowFullScreen={true}
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        title={
-                          getLocalizedText(detail, "title") || "Proje Konumu"
-                        }
-                        className="w-full h-full"
-                      />
-                    </div>
-                  ) : getDetailContent(detail) ? (
-                    <div className="bg-gray-50 p-4 rounded-lg border">
-                      <p className="text-sm text-gray-600 mb-2">
-                        {t("location.view_on_maps") || "Haritada görüntüle"}:
-                      </p>
-                      <a
-                        href={getDetailContent(detail)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
+          if (detail.type === "location") {
+            return (
+              <div key={i} className="flex-shrink-0 h-full w-[700px] flex flex-col">
+                {title && (
+                  <p className="px-8 pt-4 pb-2 text-[10px] uppercase tracking-widest text-[#797979] dark:text-[#9a9a9a]">
+                    {title}
+                  </p>
+                )}
+                <div className="flex-1">
+                  {content && isValidMapsEmbed(content) ? (
+                    <iframe
+                      src={content}
+                      width="100%" height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title={title || "Location"}
+                      className="w-full h-full"
+                    />
+                  ) : content ? (
+                    <div className="flex items-center justify-center h-full px-12">
+                      <div className="text-center space-y-4">
+                        <p className="text-[10px] uppercase tracking-widest text-[#797979] dark:text-[#9a9a9a]">
+                          {t("location.view_on_maps")}
+                        </p>
+                        <a
+                          href={content} target="_blank" rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 bg-foreground text-background px-4 py-2 text-xs uppercase tracking-wide hover:opacity-80 transition-opacity"
                         >
-                          <path
-                            fillRule="evenodd"
-                            d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        {t("location.open_maps") || "Google Maps'te Aç"}
-                      </a>
+                          {t("location.open_maps")}
+                        </a>
+                      </div>
                     </div>
                   ) : (
-                    <div className="bg-gray-100 p-4 rounded-lg text-center text-gray-500">
-                      {t("location.no_location") ||
-                        "Konum bilgisi mevcut değil"}
-                    </div>
-                  )}
-                  {getLocalizedText(detail, "content") && (
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <p className="text-blue-800 text-sm">
-                        {getLocalizedText(detail, "content")}
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                        {t("location.no_location")}
                       </p>
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+              </div>
+            );
+          }
+
+          return null;
+        })}
+
+        {/* ── Trailing spacer ── */}
+        <div className="w-20 flex-shrink-0 h-full" />
       </div>
     </div>
   );

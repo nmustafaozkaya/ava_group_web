@@ -14,6 +14,7 @@
     "upcomingProjects": "Upcoming Projects",
     "contactButton": "Get in Touch",
     "contactInfoTitle": "Contact Information",
+    "contactSubtitle": "You can reach us through the details below.",
     "phone": "Phone",
     "address": "Address",
     "email": "Email",
@@ -22,6 +23,8 @@
     "theme": "Theme",
     "language": "Language",
     "openSettings": "Open Settings",
+    "openSocialMedia": "Social Media",
+    "socialMedia": "Social Media",
     "mobileMenu": "Mobile Menu"
   },
   "projects": {
@@ -93,14 +96,6 @@
       "client": "Aena",
       "typology": "Sustainable Design"
     }
-  },
-  "contact": {
-    "title": "Contact Us",
-    "phone": "Phone",
-    "email": "Email",
-    "address": "Address",
-    "clickForLocation": "Click for Location",
-    "close": "Close"
   },
   "contactus": {
     "triggerButton": "Contact Us",

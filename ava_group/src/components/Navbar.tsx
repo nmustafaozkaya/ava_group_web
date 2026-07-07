@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { socialLinks } from "@/config/socialLinks";
 
 // Sürgülü Tema Toggle Bileşeni
 const ThemeToggle = () => {
@@ -103,6 +104,24 @@ const ThemeToggle = () => {
   );
 };
 
+const SocialLinksRow = ({ className }: { className?: string }) => (
+  <div className={`flex flex-wrap items-center gap-2 ${className ?? ""}`}>
+    {socialLinks.map(({ href, label, icon: Icon, color }) => (
+      <a
+        key={label}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={label}
+        title={label}
+        className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-200 hover:scale-110 hover:bg-accent"
+      >
+        <Icon className="h-5 w-5" style={{ color }} />
+      </a>
+    ))}
+  </div>
+);
+
 export default function Navbar() {
   const t = useTranslations("Navbar");
   const [activeLink, setActiveLink] = useState("home");
@@ -181,7 +200,7 @@ export default function Navbar() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon">
                   <Menu className="h-5 w-5" />
-                  <span className="sr-only">{t("openSettings")}</span>
+                  <span className="sr-only">{t("openSocialMedia")}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -189,8 +208,13 @@ export default function Navbar() {
                 align="end"
                 forceMount
               >
+                <DropdownMenuSeparator />
                 <DropdownMenuLabel>{t("settings")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuLabel>{t("socialMedia")}</DropdownMenuLabel>
+                <div className="px-2 pb-2">
+                  <SocialLinksRow />
+                </div>
                 <DropdownMenuGroup>
                   <div className="flex items-center justify-between px-2 py-1.5">
                     <span className="text-sm">{t("theme")}</span>
@@ -233,6 +257,12 @@ export default function Navbar() {
           </div>
         </div>
         <nav className="flex flex-col p-4 space-y-2">
+          <div className="rounded-lg border bg-muted/50 p-4 mb-2">
+            <p className="text-sm font-medium text-muted-foreground mb-3">
+              {t("socialMedia")}
+            </p>
+            <SocialLinksRow className="justify-center" />
+          </div>
           <Link
             href="#completed-projects"
             className="block rounded-md p-3 text-base font-medium text-foreground hover:bg-accent hover:text-accent-foreground"

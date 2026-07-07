@@ -14,6 +14,7 @@
     "upcomingProjects": "Gelecek Projelerimiz",
     "contactButton": "İletişime Geçin",
     "contactInfoTitle": "İletişim Bilgileri",
+    "contactSubtitle": "Bizimle aşağıdaki bilgiler üzerinden iletişime geçebilirsiniz.",
     "phone": "Telefon",
     "address": "Adres",
     "email": "E-posta",
@@ -22,6 +23,8 @@
     "theme": "Tema",
     "language": "Dil",
     "openSettings": "Ayarları Aç",
+    "openSocialMedia": "Sosyal Medya",
+    "socialMedia": "Sosyal Medya",
     "mobileMenu": "Mobil Menü"
   },
   "projects": {
@@ -93,14 +96,6 @@
       "client": "Aena",
       "typology": "Sürdürülebilir Tasarım"
     }
-  },
-  "contact": {
-    "title": "Bizimle İletişime Geçin",
-    "phone": "Telefon",
-    "email": "E-posta",
-    "address": "Adres",
-    "clickForLocation": "Konum için tıklayın",
-    "close": "Kapat"
   },
 
   "contactus": {

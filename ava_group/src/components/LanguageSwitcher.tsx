@@ -1,12 +1,12 @@
 "use client";
-import { useRouter, usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
+import { useRouter, usePathname } from "@/i18n/navigation";
 import Image from "next/image";
 
 const languages = [
   { code: "tr", flag: "/icons/tr.png", label: "Türkçe" },
   { code: "en", flag: "/icons/en.png", label: "English" },
-  { code: "ar", flag: "/icons/ar.png", label: "Arabic" },
+  { code: "ar", flag: "/icons/ar.png", label: "العربية" },
 ];
 
 export default function LanguageSwitcher() {
@@ -16,9 +16,7 @@ export default function LanguageSwitcher() {
 
   const handleChange = (locale: string) => {
     if (locale === currentLocale) return;
-    const segments = pathname.split("/");
-    segments[1] = locale;
-    router.push(segments.join("/"));
+    router.replace(pathname, { locale });
   };
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { ProjectData } from "../data/project";
+import { ProjectData } from "../app/[locale]/page";
 
 interface AdminProjectsContextType {
   projects: ProjectData[];

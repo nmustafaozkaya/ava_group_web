@@ -23,9 +23,7 @@ export function ContactSheet({ open, onOpenChange }: ContactSheetProps) {
       <SheetContent className="flex flex-col z-[100]">
         <SheetHeader>
           <SheetTitle>{t("contactInfoTitle")}</SheetTitle>
-          <SheetDescription>
-            Bizimle aşağıdaki bilgiler üzerinden iletişime geçebilirsiniz.
-          </SheetDescription>
+          <SheetDescription>{t("contactSubtitle")}</SheetDescription>
         </SheetHeader>
 
         {/* Harita yukarı alındı */}
